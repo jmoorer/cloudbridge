@@ -7,33 +7,27 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "./ui/dialog";
 import {
-  use,
   useId,
   useState,
   type ComponentType,
   type PropsWithChildren,
 } from "react";
-import { Item, ItemContent } from "./ui/item";
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldLabel,
-  FieldTitle,
-} from "./ui/field";
+import { Field, FieldLabel, FieldTitle } from "./ui/field";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { GoogleDriveIcon } from "./GoogleDriveIcon";
 import { accountTypeSchema, type AccountType } from "#/lib/schemas";
 import { DropboxIcon } from "./DropboxIcon";
+import { connectAccountFn } from "#/lib/api/connect";
+import { useServerFn } from "@tanstack/react-start";
+
 type Props = PropsWithChildren<{}>;
+
 const ConnectAccountButton = ({}: Props) => {
-  const [type, setType] = useState<AccountType>();
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button size="xs">
           <Plus />
           Add
@@ -80,6 +74,9 @@ function AccountOption({
 
 function ConnectAccountForm() {
   const [type, setType] = useState<AccountType>();
+
+  const connectAccount = useServerFn(connectAccountFn);
+
   return (
     <div className="space-y-4">
       <RadioGroup
@@ -88,12 +85,16 @@ function ConnectAccountForm() {
       >
         <AccountOption
           label="Google drive"
-          value="google_drive"
+          value="google"
           Icon={GoogleDriveIcon}
         />
         <AccountOption label="Dropbox" value="dropbox" Icon={DropboxIcon} />
       </RadioGroup>
-      <Button disabled={!type} className="w-full">
+      <Button
+        disabled={!type}
+        className="w-full"
+        onClick={() => type && connectAccount({ data: { type } })}
+      >
         Connect
       </Button>
     </div>

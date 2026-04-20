@@ -7,18 +7,33 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSkeleton,
 } from "./ui/sidebar";
-import type { AppSession } from "#/lib/api/session";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import ConnectAccountButton from "./ConnectAccountButton";
+import { account, type ConnectedAccount, type User } from "#/lib/db/schema";
+import { disconnectAccountFn } from "#/lib/api/connect";
+import { authClient } from "#/lib/auth-client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "./ui/dropdown-menu";
+import { useServerFn } from "@tanstack/react-start";
+import { logoutFn } from "#/lib/api/session";
+import { TrashIcon } from "lucide-react";
 
 type Props = {
-  user: AppSession["user"];
+  user: User;
+  accounts: ConnectedAccount[];
 };
-function AppSidebar({ user }: Props) {
+function AppSidebar({ user, accounts }: Props) {
   return (
     <Sidebar>
       <SidebarHeader>
@@ -39,13 +54,14 @@ function AppSidebar({ user }: Props) {
             Accounts
             <ConnectAccountButton />
           </SidebarGroupLabel>
-          <SidebarMenu>
+          {/* <SidebarMenu>
             {Array.from({ length: 5 }).map((_, index) => (
               <SidebarMenuItem key={index}>
                 <SidebarMenuSkeleton />
               </SidebarMenuItem>
             ))}
-          </SidebarMenu>
+          </SidebarMenu> */}
+          <AccountList accounts={accounts} />
         </SidebarGroup>
         <SidebarGroup />
       </SidebarContent>
@@ -55,23 +71,46 @@ function AppSidebar({ user }: Props) {
     </Sidebar>
   );
 }
-
-function UserMenu({ user }: { user: AppSession["user"] }) {
+function AccountList({ accounts }: { accounts: ConnectedAccount[] }) {
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
-        <SidebarMenuButton size="lg" className="mb-2">
-          <Avatar>
-            {user.image && <AvatarImage src={user.image} />}
-            <AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col ">
-            <span>{user.name}</span>
-            <span>{user.email}</span>
-          </div>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
+      {accounts.map((account) => (
+        <SidebarMenuItem key={account.id}>
+          <SidebarMenuButton>{account.label}</SidebarMenuButton>{" "}
+          <SidebarMenuAction
+            showOnHover
+            // className="rounded-sm data-[state=open]:bg-accent"
+          >
+            <TrashIcon />
+          </SidebarMenuAction>
+        </SidebarMenuItem>
+      ))}
     </SidebarMenu>
+  );
+}
+function UserMenu({ user }: { user: User }) {
+  const logout = useServerFn(logoutFn);
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" className="mb-2">
+              <Avatar>
+                {user.image && <AvatarImage src={user.image} />}
+                <AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>
+              </Avatar>
+
+              <span>{user.name}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
+        <DropdownMenuItem onClick={() => logout()}>Logout</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 export default AppSidebar;

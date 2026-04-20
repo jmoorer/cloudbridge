@@ -3,15 +3,14 @@ import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 
-export const getSession = createServerFn({ method: "GET" }).handler(
+export const getSessionFn = createServerFn({ method: "GET" }).handler(
   async () => {
     const headers = getRequestHeaders();
     const session = await auth.api.getSession({ headers });
     return session;
   },
 );
-export type AppSession = Awaited<ReturnType<typeof requireSession>>;
-export const requireSession = createServerFn({ method: "GET" }).handler(
+export const requireSessionFn = createServerFn({ method: "GET" }).handler(
   async () => {
     const headers = getRequestHeaders();
     const session = await auth.api.getSession({ headers });
@@ -23,12 +22,10 @@ export const requireSession = createServerFn({ method: "GET" }).handler(
     return session;
   },
 );
-export const deleteSession = createServerFn({ method: "POST" }).handler(
-  async () => {
-    const headers = getRequestHeaders();
-    await auth.api.signOut({ headers });
-    throw redirect({
-      to: "/",
-    });
-  },
-);
+export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
+  const headers = getRequestHeaders();
+  await auth.api.signOut({ headers });
+  throw redirect({
+    to: "/",
+  });
+});

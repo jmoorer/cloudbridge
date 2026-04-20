@@ -10,24 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from "#/components/ui/card";
-import { deleteSession } from "#/lib/api/session";
-import { auth } from "#/lib/auth";
+import { getSessionFn } from "#/lib/api/session";
 import { authClient } from "#/lib/auth-client";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-
-import { createServerFn, useServerFn } from "@tanstack/react-start";
-import { getRequestHeaders } from "@tanstack/react-start/server";
-
-const getSession = createServerFn({ method: "GET" }).handler(async () => {
-  const headers = getRequestHeaders();
-  const session = await auth.api.getSession({ headers });
-  return session;
-});
 
 export const Route = createFileRoute("/")({
   component: App,
   beforeLoad: async () => {
-    const session = await getSession();
+    const session = await getSessionFn();
     if (session) {
       throw redirect({
         to: "/bridge",

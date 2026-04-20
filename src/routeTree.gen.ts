@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppBridgeRouteImport } from './routes/_app/bridge'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiConnectGoogleCallbackRouteImport } from './routes/api/connect/google/callback'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
@@ -39,18 +40,26 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiConnectGoogleCallbackRoute =
+  ApiConnectGoogleCallbackRouteImport.update({
+    id: '/api/connect/google/callback',
+    path: '/api/connect/google/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/bridge': typeof AppBridgeRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/connect/google/callback': typeof ApiConnectGoogleCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/bridge': typeof AppBridgeRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/connect/google/callback': typeof ApiConnectGoogleCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,13 +68,31 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/_app/bridge': typeof AppBridgeRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/connect/google/callback': typeof ApiConnectGoogleCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/bridge' | '/api/auth/$'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/bridge'
+    | '/api/auth/$'
+    | '/api/connect/google/callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/bridge' | '/api/auth/$'
-  id: '__root__' | '/' | '/_app' | '/about' | '/_app/bridge' | '/api/auth/$'
+  to:
+    | '/'
+    | '/about'
+    | '/bridge'
+    | '/api/auth/$'
+    | '/api/connect/google/callback'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/about'
+    | '/_app/bridge'
+    | '/api/auth/$'
+    | '/api/connect/google/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -73,6 +100,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   AboutRoute: typeof AboutRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiConnectGoogleCallbackRoute: typeof ApiConnectGoogleCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -112,6 +140,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/connect/google/callback': {
+      id: '/api/connect/google/callback'
+      path: '/api/connect/google/callback'
+      fullPath: '/api/connect/google/callback'
+      preLoaderRoute: typeof ApiConnectGoogleCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -130,6 +165,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   AboutRoute: AboutRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiConnectGoogleCallbackRoute: ApiConnectGoogleCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

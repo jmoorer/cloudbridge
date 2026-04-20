@@ -30,15 +30,9 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
-  beforeLoad: () => {
-    return {
-      theme: "light",
-    };
-  },
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const x = Route.useRouteContext();
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
