@@ -10,6 +10,7 @@ export const getSession = createServerFn({ method: "GET" }).handler(
     return session;
   },
 );
+export type AppSession = Awaited<ReturnType<typeof requireSession>>;
 export const requireSession = createServerFn({ method: "GET" }).handler(
   async () => {
     const headers = getRequestHeaders();

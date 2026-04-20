@@ -13,7 +13,7 @@ import {
 import { deleteSession } from "#/lib/api/session";
 import { auth } from "#/lib/auth";
 import { authClient } from "#/lib/auth-client";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
@@ -26,15 +26,17 @@ const getSession = createServerFn({ method: "GET" }).handler(async () => {
 
 export const Route = createFileRoute("/")({
   component: App,
-  loader: async () => {
-    const seession = await getSession();
-    return seession;
+  beforeLoad: async () => {
+    const session = await getSession();
+    if (session) {
+      throw redirect({
+        to: "/bridge",
+      });
+    }
   },
 });
 
 function App() {
-  const data = Route.useLoaderData();
-  const signOut = useServerFn(deleteSession);
   const signIn = () =>
     authClient.signIn.social({
       provider: "google",
